@@ -31,10 +31,16 @@ jobs:
           "perl/c/bin" | Resolve-Path >> $env:GITHUB_PATH
           rm strawberry-perl-5.42.2.1-64bit-portable.zip
 
-          Write-Output $env:PATH
-
-      - uses: actions/checkout@v6
+      - name: Checkout OpenSSL
+        uses: actions/checkout@v6
         with:
           repository: openssl/openssl
           submodules: true
           ref: openssl-3.6.2
+
+      - name: Build OpenSSL
+        run: |
+          perl Configure VC-WIN64A no-makedepend
+          nmake
+          nmake test
+          nmake install
