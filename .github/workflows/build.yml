@@ -2,34 +2,36 @@ name: "Build OpenSSL - Windows (x64)"
 
 on:
   workflow_dispatch:
-  
+
+# https://github.com/openssl/openssl/blob/master/.github/workflows/windows.yml
 jobs:
   build:
-    runs-on: windows-latest
+  
+    strategy:
+      matrix:
+        platform:
+
+          - arch: arm64
+            os: windows-2025
+            vcvars: C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvars64.bat
+
+          - arch: amd64
+            os: windows-2025
+            vcvars: C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvars64.bat
+
+          - arch: x86
+            os: windows-2025
+            vcvars: C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvars32.bat
+
+    runs-on: ${{ matrix.platform.os }}
+
     steps:
-    
-      - name: Setup MSBuild
-        uses: microsoft/setup-msbuild@v3
-        with:
-          msbuild-architecture: x64
 
       - name: Setup NASM
         shell: pwsh
         run: |
-          aria2c https://www.nasm.us/pub/nasm/releasebuilds/3.01/win64/nasm-3.01-win64.zip
-          7z x nasm-3.01-win64.zip -o"nasm"
-          rm nasm-3.01-win64.zip
-          "nasm/nasm-3.01" | Resolve-Path >> $env:GITHUB_PATH
-
-      - name: Setup StrawberryPerl
-        shell: pwsh
-        run: |
-          aria2c https://github.com/StrawberryPerl/Perl-Dist-Strawberry/releases/download/SP_54221_64bit/strawberry-perl-5.42.2.1-64bit-portable.zip
-          7z x strawberry-perl-5.42.2.1-64bit-portable.zip -o"perl"
-          "perl/perl/site/bin" | Resolve-Path >> $env:GITHUB_PATH
-          "perl/perl/bin" | Resolve-Path >> $env:GITHUB_PATH
-          "perl/c/bin" | Resolve-Path >> $env:GITHUB_PATH
-          rm strawberry-perl-5.42.2.1-64bit-portable.zip
+          choco install nasm ${{ matrix.platform.arch == 'x86' && '--x86' || '' }}
+          "C:\Program Files${{ matrix.platform.arch == 'x86' && ' (x86)' || '' }}\NASM" >> $env:GITHUB_PATH
 
       - name: Checkout OpenSSL
         uses: actions/checkout@v6
@@ -38,9 +40,41 @@ jobs:
           submodules: true
           ref: openssl-3.6.2
 
-      - name: Build OpenSSL
+      - name: Prepare Build
+        run: mkdir build
+
+      - name: Configure Build
+        working-directory: build
+        shell: cmd
         run: |
-          perl Configure VC-WIN64A no-makedepend
-          nmake
-          nmake test
-          nmake install
+          call "${{ matrix.platform.vcvars }}"
+          perl ..\Configure --banner=Configured --strict-warnings -DOSSL_WINCTX=openssl no-makedepend
+          perl configdata.pm --dump
+
+      - name: Build
+        working-directory: build
+        shell: cmd
+        run: |
+          call "${{ matrix.platform.vcvars }}"
+          nmake /S
+
+      - name: Test
+        working-directory: build
+        shell: cmd
+        run: |
+          call "${{ matrix.platform.vcvars }}"
+          nmake test HARNESS_JOBS=4
+
+      - name: Install
+        working-directory: build
+        shell: cmd
+        run: |
+          call "${{ matrix.platform.vcvars }}"
+          mkdir dist
+          nmake install DESTDIR=dist
+
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v7
+        with:
+          path: build/dist
+
