@@ -11,18 +11,25 @@ jobs:
       matrix:
         platform:
 
-          - arch: arm64
-            os: windows-2025
-            vcvars: C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvars64.bat
-
-          - arch: amd64
-            os: windows-2025
-            vcvars: C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvars64.bat
-
-          - arch: x86
-            os: windows-2025
+          - name: Windows x64 - OpenSSL on x86
+            runs-on: windows-2025
+            arch: x86
+            config: VC-WIN32
             vcvars: C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvars32.bat
 
+          - name: Windows x64 - OpenSSL on x86_64
+            runs-on: windows-2025
+            arch: amd64
+            config: VC-WIN64A
+            vcvars: C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvars64.bat
+
+          - name: Windows x64 - OpenSSL on ARM64
+            runs-on: windows-2025
+            arch: arm64
+            config: VC-WIN64-ARM
+            vcvars: C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvars64.bat
+
+    name: ${{ matrix.platform.name }}
     runs-on: ${{ matrix.platform.os }}
 
     steps:
@@ -48,7 +55,7 @@ jobs:
         shell: cmd
         run: |
           call "${{ matrix.platform.vcvars }}"
-          perl ..\Configure --banner=Configured --strict-warnings -DOSSL_WINCTX=openssl no-makedepend
+          perl ..\Configure --banner=Configured --strict-warnings -DOSSL_WINCTX=openssl no-makedepend ${{ matrix.platform.config }}
           perl configdata.pm --dump
 
       - name: Build
@@ -56,7 +63,7 @@ jobs:
         shell: cmd
         run: |
           call "${{ matrix.platform.vcvars }}"
-          nmake /S
+          nmake
 
       - name: Test
         working-directory: build
