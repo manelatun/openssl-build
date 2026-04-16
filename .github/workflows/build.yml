@@ -18,13 +18,16 @@ jobs:
         run: |
           aria2c https://www.nasm.us/pub/nasm/releasebuilds/3.01/win64/nasm-3.01-win64.zip
           7z x nasm-3.01-win64.zip
-          ls
           "nasm-3.01" | Resolve-Path >> $env:GITHUB_PATH
+          rm nasm-3.01-win64.zip
 
       - uses: actions/checkout@v6
         with:
           repository: openssl/openssl
           submodules: true
           ref: openssl-3.6.2
-          path: 'openssl-3.6.2'
+          path: openssl-3.6.2
 
+      - name: Test
+        shell: pwsh
+        run: ls
