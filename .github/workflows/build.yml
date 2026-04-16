@@ -7,12 +7,21 @@ jobs:
   build:
     runs-on: windows-latest
     steps:
+    
       - name: Setup MSBuild
         uses: microsoft/setup-msbuild@v3
         with:
           msbuild-architecture: x64
 
+      - name: Setup NASM
+        run: >
+          aria2c https://www.nasm.us/pub/nasm/releasebuilds/3.01/win64/nasm-3.01-win64.zip
+          7z x nasm-3.01-win64.zip
+          ls
+      
       - uses: actions/checkout@v6
         with:
           repository: openssl/openssl
           ref: openssl-3.6.2
+          submodules: true
+
