@@ -17,7 +17,7 @@ jobs:
         shell: pwsh
         run: |
           aria2c https://www.nasm.us/pub/nasm/releasebuilds/3.01/win64/nasm-3.01-win64.zip
-          7z x nasm-3.01-win64.zip
+          7z x nasm-3.01-win64.zip -o"nasm" -spe
           "nasm-3.01" | Resolve-Path >> $env:GITHUB_PATH
           rm nasm-3.01-win64.zip
 
@@ -25,7 +25,7 @@ jobs:
         shell: pwsh
         run: |
           aria2c https://github.com/StrawberryPerl/Perl-Dist-Strawberry/releases/download/SP_54221_64bit/strawberry-perl-5.42.2.1-64bit-portable.zip
-          7z x strawberry-perl-5.42.2.1-64bit-portable.zip
+          7z x strawberry-perl-5.42.2.1-64bit-portable.zip -o"perl" -spe
           ls
           "nasm-3.01" | Resolve-Path >> $env:GITHUB_PATH
           rm nasm-3.01-win64.zip
