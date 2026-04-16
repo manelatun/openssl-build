@@ -26,8 +26,8 @@ jobs:
         run: |
           aria2c https://github.com/StrawberryPerl/Perl-Dist-Strawberry/releases/download/SP_54221_64bit/strawberry-perl-5.42.2.1-64bit-portable.zip
           7z x strawberry-perl-5.42.2.1-64bit-portable.zip -o"perl"
-          "perl/site/bin" | Resolve-Path >> $env:GITHUB_PATH
-          "perl/bin" | Resolve-Path >> $env:GITHUB_PATH
+          "perl/perl/site/bin" | Resolve-Path >> $env:GITHUB_PATH
+          "perl/perl/bin" | Resolve-Path >> $env:GITHUB_PATH
           "perl/c/bin" | Resolve-Path >> $env:GITHUB_PATH
           rm strawberry-perl-5.42.2.1-64bit-portable.zip
 
