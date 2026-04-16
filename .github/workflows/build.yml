@@ -21,15 +21,17 @@ jobs:
           "nasm-3.01" | Resolve-Path >> $env:GITHUB_PATH
           rm nasm-3.01-win64.zip
 
+      - name: Setup StrawberryPerl
+        shell: pwsh
+        run: |
+          aria2c https://github.com/StrawberryPerl/Perl-Dist-Strawberry/releases/download/SP_54221_64bit/strawberry-perl-5.42.2.1-64bit-portable.zip
+          7z x strawberry-perl-5.42.2.1-64bit-portable.zip
+          ls
+          "nasm-3.01" | Resolve-Path >> $env:GITHUB_PATH
+          rm nasm-3.01-win64.zip
+
       - uses: actions/checkout@v6
         with:
           repository: openssl/openssl
           submodules: true
           ref: openssl-3.6.2
-          path: openssl-3.6.2
-
-      - name: Test
-        shell: pwsh
-        run: |
-          ls
-          Get-ChildItem env:
