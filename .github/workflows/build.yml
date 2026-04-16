@@ -30,4 +30,6 @@ jobs:
 
       - name: Test
         shell: pwsh
-        run: ls
+        run: |
+          ls
+          Get-ChildItem env:
