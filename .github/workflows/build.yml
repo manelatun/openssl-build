@@ -14,7 +14,7 @@ jobs:
           msbuild-architecture: x64
 
       - name: Setup NASM
-        run: >
+        run: |
           aria2c https://www.nasm.us/pub/nasm/releasebuilds/3.01/win64/nasm-3.01-win64.zip
           7z x nasm-3.01-win64.zip
           ls
