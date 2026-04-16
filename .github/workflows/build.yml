@@ -1,0 +1,13 @@
+name: "Build OpenSSL - Windows (x64)"
+
+on:
+  workflow_dispatch:
+  
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - name: Setup MSBuild
+        uses: microsoft/setup-msbuild@v3
+        with:
+          msbuild-architecture: x64
