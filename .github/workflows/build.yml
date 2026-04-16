@@ -12,19 +12,19 @@ jobs:
       matrix:
         platform:
 
-          - name: Windows x64 - OpenSSL on x86
+          - name: OpenSSL on x86 (Windows x64)
             runs-on: windows-2025
             arch: x86
             config: VC-WIN32
             vcvars: C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvars32.bat
 
-          - name: Windows x64 - OpenSSL on x86_64
+          - name: OpenSSL on x86_64 (Windows x64)
             runs-on: windows-2025
             arch: amd64
             config: VC-WIN64A
             vcvars: C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvars64.bat
 
-          - name: Windows x64 - OpenSSL on ARM64
+          - name: OpenSSL on ARM64 (Windows x64)
             runs-on: windows-2025
             arch: arm64
             config: VC-WIN64-ARM
@@ -60,7 +60,7 @@ jobs:
         shell: cmd
         run: |
           call "${{ matrix.platform.vcvars }}"
-          nmake
+          nmake /S
 
       - name: Test
         working-directory: build
