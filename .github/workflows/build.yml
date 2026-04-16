@@ -14,15 +14,17 @@ jobs:
           msbuild-architecture: x64
 
       - name: Setup NASM
+        shell: pwsh
         run: |
-          aria2c https://www.nasm.us/pub/nasm/releasebuilds/3.01/win64/nasm-3.01-win64.zip -o nasm-3.01-win64.zip
-          7z x nasm-3.01-win64.zip -spe -onasm
+          aria2c https://www.nasm.us/pub/nasm/releasebuilds/3.01/win64/nasm-3.01-win64.zip
+          7z x nasm-3.01-win64.zip
           ls
-          ls nasm
+          "nasm-3.01" | Resolve-Path >> $env:GITHUB_PATH
 
       - uses: actions/checkout@v6
         with:
           repository: openssl/openssl
-          ref: openssl-3.6.2
           submodules: true
+          ref: openssl-3.6.2
+          path: 'openssl-3.6.2'
 
